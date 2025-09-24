@@ -1,8 +1,0 @@
-Para executar basta rodar o comando de criação de container:
-docker run -d --name postgres -p 5432:5432 -e POSTGRES_PASSWORD="1234" postgres
-
-Em seguida executar o BD.sql no banco
-
-Ativar o venv source .venv/bin/activate
-
-E por fim executar o comando flask --app nome_arquivo_principal run
