@@ -1,0 +1,111 @@
+import psycopg2
+
+# Configurações de conexão
+def get_connection():
+    return psycopg2.connect(
+        dbname="postgres",
+        user="postgres",
+        password="1234",
+        host="localhost",
+        port="5432"
+    )
+
+
+# -------------------------------
+# Cadastro de Cliente
+# -------------------------------
+def cadastrar_cliente(cpf, nome, senha, telefone, endereco, cep):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+        INSERT INTO cliente (cpf, nome, senha, telefone, endereco, cep)
+        VALUES (%s, %s, %s, %s, %s, %s)
+        RETURNING id;
+    """, (cpf, nome, senha, telefone, endereco, cep))
+    cliente_id = cursor.fetchone()[0]
+    conn.commit()
+    cursor.close()
+    conn.close()
+    return cliente_id
+
+
+# -------------------------------
+# Login de Cliente
+# -------------------------------
+def login_cliente(cpf, senha):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT id, nome FROM cliente WHERE cpf = %s AND senha = %s;
+    """, (cpf, senha))
+    resultado = cursor.fetchone()
+    cursor.close()
+    conn.close()
+    if resultado:
+        return {"id": resultado[0], "nome": resultado[1]}
+    else:
+        return None
+
+
+# -------------------------------
+# Cadastro de Filho
+# -------------------------------
+def cadastrar_filho(cpf, nome, escola, responsavel_id):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+        INSERT INTO filho (cpf, nome, escola, responsavel_id)
+        VALUES (%s, %s, %s, %s)
+        RETURNING id;
+    """, (cpf, nome, escola, responsavel_id))
+    filho_id = cursor.fetchone()[0]
+    conn.commit()
+    cursor.close()
+    conn.close()
+    return filho_id
+
+
+# -------------------------------
+# Solicitação de Serviço
+# (associa criança a um serviço)
+# -------------------------------
+def solicitar_servico(crianca_id, servico_id):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+        INSERT INTO servico_crianca (crianca_id, servico_id, ativo)
+        VALUES (%s, %s, %s)
+        RETURNING id;
+    """, (crianca_id, servico_id, 1))  # ativo = 1 (sim)
+    solicitacao_id = cursor.fetchone()[0]
+    conn.commit()
+    cursor.close()
+    conn.close()
+    return solicitacao_id
+
+
+
+if __name__ == "__main__":
+    sair = "S"
+
+    while sair != "N":
+        opcao = int(input("Informe a Opção desejada: \n1 - Cadastro de Cliente\n2 - Login de Cliente\n3 - Cadastrar Filho(s)\n4 - Solicitar Serviço\n"))
+
+        if opcao == 1:
+            print("\nCadastro de Cliente")
+            cpf = int(input("\nInforme seu CPF\n"))
+            nome = input("\nInforme seu nome\n")
+            senha = input("\nInforme sua senha\n")
+            endereco = input("\nInforme seu endereço\n")
+            telefone = input("\nInforme seu telefone\n")
+            cep = int(input("\nInforme seu CEP\n"))
+            cliente_id = cadastrar_cliente(cpf, nome, senha, telefone, endereco, cep)
+            print("\nCliente cadastrado com ID: ", cliente_id)
+        elif opcao == 2:
+            print("\nLogin de Cliente")
+            cpf = int(input("\nInforme seu CPF\n"))
+            senha = input("\nInforme sua senha\n")
+            login = login_cliente(cpf,senha)
+            print("\nLogin realizado: ", login)
+
+        sair = input("\nInforme S para continuar ou N para finalizar\n")

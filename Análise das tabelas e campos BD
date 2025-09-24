@@ -1,0 +1,35 @@
+--servico
+Trajeto
+Horário
+taxa
+veiculo
+valor por km
+quantidade de km
+
+--cliente
+nome
+senha
+telefone
+cpf
+nome do filho (talvez no futuro adicionar função para cadastrar mais filhos/dependentes)
+escola do filho
+endereco(rua + numero)
+cep
+cidade
+estado
+
+--veiculo
+cor
+marca
+modelo
+placa
+capacidade maxima
+motorista
+
+--motorista
+nome
+cpf
+semha
+antecedentes criminais
+exame psicologico
+telefone
